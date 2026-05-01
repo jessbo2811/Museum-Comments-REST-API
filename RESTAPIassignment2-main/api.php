@@ -39,9 +39,9 @@ class API {
     }
 
     public function Create() {
-        $oid = $_POST['oid'];
-        $name = $_POST['name'] ?? null;
-        $comment = $_POST['comment'];
+        $oid = (trim($_POST['oid']));
+        $name = (trim($_POST['name'])) ?? null;
+        $comment = (trim($_POST['comment']));
 
         if (empty($oid) || strlen($oid) > 32 || !ctype_alnum($oid)) { {
             http_response_code(400);
@@ -58,31 +58,33 @@ class API {
             exit;
         }
 
-        $sql = "INSERT INTO tComments (objectId, name, comment) VALUES ('$oid', '$name', '$comment')";
+        $stmt = $this->mysqli->prepare("INSERT INTO tComments (objectId, name, comment) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $oid, $name, $comment);
+        $stmt->execute();
         http_response_code(201);
         exit;
     }
     }  
 
     public function Read() {
-        $oid = $_GET['oid'];
+        $oid = (trim($_GET['oid']));
 
         if (empty($oid) || strlen($oid) > 32 || !ctype_alnum($oid)) { 
             http_response_code(400);
             exit;
         }
-        
 
-        $sql = "SELECT * FROM tComments WHERE objectId = '$oid'";
-        $result = $this->conn->query($sql);
+        $stmt = $this->mysqli->prepare("SELECT * FROM tComments WHERE objectId = ?");
+        $stmt->bind_param("s", $oid);
+        $stmt->execute();
+        $stmt->store_result();
 
-        if ($result->num_rows < 0) {
-            http_response_code(204);
-            exit;
+        if ($stmt->num_rows > 0) {
+            http_response_code(200); 
+            
+        } else {
+            http_response_code(204); 
         }
-
-        else {
-            http_response_code(200);
-        }
+        exit;
     }
 }
