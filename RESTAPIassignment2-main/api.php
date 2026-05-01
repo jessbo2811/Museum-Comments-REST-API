@@ -5,7 +5,7 @@ class API {
     private $username = "jmb181_commentuser";
     private $password = "str0ngpassw0rd";
     private $db = "jmb181_VAMuseumComments";
-    public $conn;
+    public $conn = null;
 
     public function __construct() {
         $this->conn = new mysqli(
@@ -48,7 +48,7 @@ class API {
             exit;
         }
 
-        if (!empty($name) && $name->strlen() > 64) {
+        if (!empty($name) && strlen($name) > 64) {
             http_response_code(400);
             exit;
         }
@@ -61,10 +61,28 @@ class API {
         $sql = "INSERT INTO tComments (objectId, name, comment) VALUES ('$oid', '$name', '$comment')";
         http_response_code(201);
         exit;
-    }    
+    }
+    }  
 
     public function Read() {
+        $oid = $_GET['oid'];
 
-    }
-    }
+        if (empty($oid) || strlen($oid) > 32 || !ctype_alnum($oid)) { 
+            http_response_code(400);
+            exit;
+        }
+        
 
+        $sql = "SELECT * FROM tComments WHERE objectId = '$oid'";
+        $result = $this->conn->query($sql);
+
+        if ($result->num_rows < 0) {
+            http_response_code(204);
+            exit;
+        }
+
+        else {
+            http_response_code(200);
+        }
+    }
+}
