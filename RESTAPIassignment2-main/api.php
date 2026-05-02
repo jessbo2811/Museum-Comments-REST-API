@@ -78,12 +78,13 @@ class API {
         $stmt->bind_param("s", $oid);
         $stmt->execute();
 
-        $result = $stmt->get_result(); // get a result object you can iterate
+        $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             http_response_code(200);
             $rows = [];
             while ($row = $result->fetch_assoc()) {
+                $row['cDate'] = date('d F Y', strtotime($row['cDate']));
                 $rows[] = $row;
             }
             echo json_encode($rows);
