@@ -26,11 +26,11 @@ class API {
 
         $method = $_SERVER['REQUEST_METHOD'];
         if ($method === 'GET') {
-            $this->Read();
+            $this->read();
         }
 
         else if ($method === 'POST') {
-           $this->Create();
+           $this->create();
         }
 
         else {
@@ -45,16 +45,13 @@ class API {
 
         $this->responseCode = 201; 
 
-        if (isset($_POST['oid']) && isset($_POST['comment'])) {
+        if (isset($_POST['oid']) && isset($_POST['comment']) && isset($_POST['name'])) {
             $oid = trim($_POST['oid']);
             $comment = trim($_POST['comment']);
+            $name = trim($_POST['name']);
         }
         else {
             $this->responseCode = 400;
-        }
-
-        if (isset($_POST['name'])) {
-            $name = trim($_POST['name']);
         }
 
         if (strlen($oid) > 32 || !ctype_alnum($oid)) { 
