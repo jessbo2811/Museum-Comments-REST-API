@@ -64,7 +64,7 @@ class API {
 
         if ($this->responseCode == 201) {
 
-            $stmt = $this->conn->prepare("INSERT INTO tComments (objectId, name, comment) VALUES (?, ?, ?)");
+            $stmt = $this->conn->prepare("INSERT INTO tComments (oid, name, comment) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $oid, $name, $comment);
             $stmt->execute();
 
@@ -97,7 +97,7 @@ class API {
             $responseCode = 400;
         }
         if ($responseCode == 200) {
-            $stmt = $this->conn->prepare("SELECT * FROM tComments WHERE objectId = ?");
+            $stmt = $this->conn->prepare("SELECT * FROM tComments WHERE oid = ?");
             $stmt->bind_param("s", $oid);
             $stmt->execute();
 
