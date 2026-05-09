@@ -35,6 +35,9 @@ Content-Type: application/json
 ### Get comment with a missing oid - expects 400
 GET https://jmb181.brighton.domains/WebAppDev2/api.php?oid=
 
+### Get comment with an invalid oid - expects 400
+GET https://jmb181.brighton.domains/WebAppDev2/api.php?oid=01y6e7w8!!
+
 ### Get comments for an object with valid oid - expects 200
 GET https://jmb181.brighton.domains/WebAppDev2/api.php?oid=01y6e7w8
 Content-Type: application/json

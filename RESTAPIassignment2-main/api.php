@@ -5,8 +5,8 @@ class API {
     private $username = "jmb181_commentuser";
     private $password = "str0ngpassw0rd";
     private $db = "jmb181_VAMuseumComments";
-    public $conn = null;
-    public $responseCode = null;
+    private $conn = null;
+    private $responseCode = null;
 
     public function __construct() {
         try {
@@ -37,7 +37,7 @@ class API {
     public function create() {
         $this->responseCode = 201;
 
-        if (isset($_POST['oid']) && isset($_POST['comment']) && isset($_POST['name'])) {
+        if (isset($_POST['oid']) && isset($_POST['comment']) && isset($_POST['name']) ) {
             $oid = trim($_POST['oid']);
             $comment = trim($_POST['comment']);
             $name = trim($_POST['name']);
@@ -50,6 +50,10 @@ class API {
         }
 
         if (isset($name) && (strlen($name) < 1 || strlen($name) > 64)) {
+            $this->responseCode = 400;
+        }
+
+        if (isset($comment) && (strlen($comment) < 1)) {
             $this->responseCode = 400;
         }
 
@@ -70,7 +74,7 @@ class API {
     public function read() {
         $this->responseCode = 200;
 
-        if (isset($_GET['oid'])) {
+        if (isset($_GET['oid']) && !empty(trim($_GET['oid']))) {
             $oid = trim($_GET['oid']);
         } else {
             $this->responseCode = 400;
