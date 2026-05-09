@@ -86,7 +86,7 @@ class API {
 
     public function read() {
 
-        private $responseCode = 200;
+        $responseCode = 200;
 
         if (isset($_POST['oid'])) {
             $oid = trim($_POST['oid']);

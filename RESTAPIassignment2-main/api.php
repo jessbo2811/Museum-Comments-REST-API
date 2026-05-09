@@ -1,11 +1,12 @@
 <?php 
 
 class API {
-    private $servername = "brighton";
+    private $servername = "brighton"; // The connection to the SQL database
     private $username = "jmb181_commentuser";
     private $password = "str0ngpassw0rd";
     private $db = "jmb181_VAMuseumComments";
     public $conn = null;
+    public $responseCode = null;
 
     public function __construct() {
         try {
@@ -21,8 +22,8 @@ class API {
     }
 }
 
-    public function HandleRequest() {
-        header("Content-Type: application/json; charset=UTF-8");
+    public function handleRequest() {
+
         $method = $_SERVER['REQUEST_METHOD'];
         if ($method === 'GET') {
             $this->read();
@@ -33,9 +34,11 @@ class API {
         }
 
         else {
-            http_response_code(405);
-            exit;
+            $this->responseCode = 405;
         }
+
+        http_response_code($this->responseCode);
+
     }
 
     public function create() {
@@ -55,15 +58,11 @@ class API {
             $this->responseCode = 400;
         }
 
-        if (!empty($name) && (strlen($name) < 1 || strlen($name) > 64)) {
-            http_response_code(400);
-            exit;
+        if (strlen($name) < 1 || strlen($name) > 64) {
+            $this->responseCode = 400;
         }
-        
-        if (empty($comment)) {
-            http_response_code(400);
-            exit;
-        }
+
+        if ($this->responseCode == 201) {
 
             $stmt = $this->conn->prepare("INSERT INTO tComments (oid, name, comment) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $oid, $name, $comment);
@@ -102,21 +101,21 @@ class API {
             $stmt->bind_param("s", $oid);
             $stmt->execute();
 
-        $result = $stmt->get_result();
+            $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
-            http_response_code(200);
-            $rows = [];
-            while ($row = $result->fetch_assoc()) {
-                $row['cDate'] = date('d F Y', strtotime($row['cDate']));
-                $rows[] = $row;
+            if ($result->num_rows > 0) {
+                $rows = [];
+                while ($row = $result->fetch_assoc()) {
+                    $row['cDate'] = date('d F Y', strtotime($row['cDate']));
+                    $rows[] = $row;
+                }
+                header("Content-Type: application/json; charset=UTF-8");
+                echo json_encode($rows);
+            } else {
+                $responseCode = 204;
             }
-            echo json_encode($rows);
-        } else {
-            http_response_code(204);
+        }   
         }
-        exit;
-}
 }
 
 $api = new API();
