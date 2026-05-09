@@ -83,25 +83,25 @@ class API {
 
     public function read() {
 
-        private $responseCode = 200;
+        $this->responseCode = 200;
 
-        if (isset($_POST['oid'])) {
-            $oid = trim($_POST['oid']);
+        if (isset($_GET['oid'])) {
+            $oid = trim($_GET['oid']);
         }
 
         else {
-            $responseCode = 400;
+            $this->responseCode = 400;
         }
 
         if (strlen($oid) > 32 || !ctype_alnum($oid)) { 
-            $responseCode = 400;
+            $this->responseCode = 400;
         }
-        if ($responseCode == 200) {
+        if ($this->responseCode == 200) {
             $stmt = $this->conn->prepare("SELECT * FROM tComments WHERE oid = ?");
             $stmt->bind_param("s", $oid);
             $stmt->execute();
 
-            $result = $stmt->get_result();
+            $result = $stmt->affected_rows > 0;
 
             if ($result->num_rows > 0) {
                 $rows = [];
@@ -112,11 +112,11 @@ class API {
                 header("Content-Type: application/json; charset=UTF-8");
                 echo json_encode($rows);
             } else {
-                $responseCode = 204;
+                $this->responseCode = 204;
             }
         }   
         }
 }
 
 $api = new API();
-$api->HandleRequest();
+$api->handleRequest();
